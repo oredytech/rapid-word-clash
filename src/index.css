@@ -168,7 +168,7 @@
     box-shadow: var(--shadow-green);
   }
 
-  .falling-word.completed {
+  .falling-word.exploding {
     @apply border-secondary text-secondary;
     box-shadow: var(--shadow-pink);
     animation: explode 0.3s ease-out forwards;
@@ -300,8 +300,59 @@
     }
   }
 
+  @keyframes explosion-particle {
+    0% {
+      transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) translateY(0);
+      opacity: 1;
+      scale: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) translateY(-40px);
+      opacity: 0;
+      scale: 0.3;
+    }
+  }
+
+  @keyframes level-up-celebration {
+    0% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2) rotate(180deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-100px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
   .animate-pulse-neon {
     animation: pulse-neon 2s ease-in-out infinite;
+  }
+
+  .animate-explosion-particle {
+    animation: explosion-particle 0.3s ease-out forwards;
+  }
+
+  .animate-level-celebration {
+    animation: level-up-celebration 2s ease-in-out;
+  }
+
+  .animate-confetti {
+    animation: confetti-fall 3s linear forwards;
   }
 
   /* Utilitaires de couleur néon */

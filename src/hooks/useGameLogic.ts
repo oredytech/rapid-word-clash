@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Word, GameStats } from '../types/game';
 import { getRandomWord } from '../data/words';
+import { soundManager } from '../utils/soundEffects';
 
 const INITIAL_GAME_STATE: GameState = {
   isPlaying: false,
@@ -27,6 +28,7 @@ export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
   const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
   const [gameStartTime, setGameStartTime] = useState<number>(0);
+  const [wordsAtBottom, setWordsAtBottom] = useState<Set<string>>(new Set());
   
   const gameLoopRef = useRef<number>();
   const spawnTimerRef = useRef<number>();
@@ -88,6 +90,9 @@ export const useGameLogic = () => {
     setGameState(prev => ({ ...prev, isPlaying: false }));
     saveHighScore(gameState.score);
     
+    // Stop all sound effects
+    soundManager.stopAlert();
+    
     if (gameLoopRef.current) {
       cancelAnimationFrame(gameLoopRef.current);
     }
@@ -120,6 +125,9 @@ export const useGameLogic = () => {
       if (matchingWord) {
         console.log('Mot en cours de frappe:', matchingWord.text, 'Input:', input);
         
+        // Play laser sound when typing
+        soundManager.playLaser();
+        
         // Marquer ce mot comme étant tapé et mettre à jour le texte tapé
         newState.words = prev.words.map(word =>
           word.id === matchingWord.id
@@ -130,6 +138,10 @@ export const useGameLogic = () => {
         // Si le mot est complètement tapé, l'éliminer
         if (input.toLowerCase() === matchingWord.text.toLowerCase()) {
           console.log('Mot complètement éliminé:', matchingWord.text);
+          
+          // Play explosion sound and visual effect
+          soundManager.playExplosion();
+          
           newState.words = newState.words.filter(word => word.id !== matchingWord.id);
           newState.score = prev.score + (matchingWord.text.length * 10);
           newState.wordsTyped = prev.wordsTyped + 1;
@@ -140,6 +152,12 @@ export const useGameLogic = () => {
             newState.level = prev.level + 1;
             newState.spawnRate = Math.max(500, prev.spawnRate - 200);
             console.log('Niveau suivant:', newState.level);
+            
+            // Play level up sounds and effects
+            soundManager.playLevelUp();
+            setTimeout(() => {
+              soundManager.playCelebration();
+            }, 500);
           }
         }
       } else {
@@ -169,13 +187,40 @@ export const useGameLogic = () => {
         y: word.y + (word.speed * deltaSec)
       }));
 
+      // Check for words reaching the bottom and handle alert sounds
+      const currentWordsAtBottom = new Set<string>();
+      const bottomThreshold = window.innerHeight - 100;
+      
+      newWords.forEach(word => {
+        if (word.y > bottomThreshold) {
+          currentWordsAtBottom.add(word.id);
+        }
+      });
+
+      // Start alert for new words at bottom
+      currentWordsAtBottom.forEach(wordId => {
+        if (!wordsAtBottom.has(wordId)) {
+          soundManager.startAlert();
+        }
+      });
+
+      // Stop alert if no more words at bottom
+      if (currentWordsAtBottom.size === 0 && wordsAtBottom.size > 0) {
+        soundManager.stopAlert();
+      }
+
+      setWordsAtBottom(currentWordsAtBottom);
+
       // Supprimer les mots qui ont atteint le bas et enlever une vie
-      const wordsAtBottom = newWords.filter(word => word.y > window.innerHeight);
-      if (wordsAtBottom.length > 0) {
-        console.log('Mot(s) raté(s):', wordsAtBottom.map(w => w.text));
+      const wordsToRemove = newWords.filter(word => word.y > window.innerHeight);
+      if (wordsToRemove.length > 0) {
+        console.log('Mot(s) raté(s):', wordsToRemove.map(w => w.text));
         newWords = newWords.filter(word => word.y <= window.innerHeight);
         
-        const newLives = prev.lives - wordsAtBottom.length;
+        // Stop alert for removed words
+        soundManager.stopAlert();
+        
+        const newLives = prev.lives - wordsToRemove.length;
         if (newLives <= 0) {
           console.log('Plus de vies - Game Over');
           return { ...prev, lives: 0, words: [] };
@@ -206,7 +251,7 @@ export const useGameLogic = () => {
     }));
 
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [gameState.isPlaying, gameState.isPaused, gameState.spawnRate, gameState.wordsTyped, gameStartTime, spawnWord]);
+  }, [gameState.isPlaying, gameState.isPaused, gameState.spawnRate, gameState.wordsTyped, gameStartTime, spawnWord, wordsAtBottom]);
 
   // Démarrer/arrêter la boucle de jeu
   useEffect(() => {

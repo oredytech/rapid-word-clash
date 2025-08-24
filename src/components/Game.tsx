@@ -1,15 +1,26 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameLogic } from '../hooks/useGameLogic';
 import FallingWord from './FallingWord';
 import GameHUD from './GameHUD';
 import TypingZone from './TypingZone';
 import GameMenu from './GameMenu';
 import Soldier from './Soldier';
+import LevelUpCelebration from './LevelUpCelebration';
 import { Pause, Play } from 'lucide-react';
 
 const Game: React.FC = () => {
   const { gameState, stats, startGame, handleInput, togglePause } = useGameLogic();
+  const [showLevelUpCelebration, setShowLevelUpCelebration] = useState(false);
+  const [celebrationLevel, setCelebrationLevel] = useState(1);
+
+  // Watch for level changes to trigger celebration
+  useEffect(() => {
+    if (gameState.level > celebrationLevel && gameState.isPlaying) {
+      setCelebrationLevel(gameState.level);
+      setShowLevelUpCelebration(true);
+    }
+  }, [gameState.level, gameState.isPlaying, celebrationLevel]);
 
   // Trouver le mot cible (celui en cours de frappe)
   const targetWord = gameState.words.find(word => word.isBeingTyped);
@@ -67,6 +78,13 @@ const Game: React.FC = () => {
         value={gameState.currentInput}
         onChange={handleInput}
         isGamePlaying={gameState.isPlaying && !gameState.isPaused}
+      />
+
+      {/* Level up celebration */}
+      <LevelUpCelebration
+        level={gameState.level}
+        isVisible={showLevelUpCelebration}
+        onComplete={() => setShowLevelUpCelebration(false)}
       />
 
       {/* Overlay de pause */}
