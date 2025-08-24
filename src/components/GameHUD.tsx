@@ -28,6 +28,15 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
           </div>
           <div className="text-2xl font-bold text-accent">{gameState.level}</div>
         </div>
+
+        {/* MPM en bas du niveau */}
+        <div className="hud-element">
+          <div className="flex items-center gap-2 text-secondary">
+            <Target className="w-5 h-5" />
+            <span className="text-sm">MPM</span>
+          </div>
+          <div className="text-xl font-bold text-secondary">{stats.wpm}</div>
+        </div>
       </div>
 
       {/* Vies droite */}
@@ -56,17 +65,6 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
           <div className="text-lg font-bold text-neon-orange">
             {stats.highScore.toLocaleString()}
           </div>
-        </div>
-      </div>
-
-      {/* MPM en bas à gauche du score */}
-      <div className="absolute bottom-8 left-4">
-        <div className="hud-element">
-          <div className="flex items-center gap-2 text-secondary">
-            <Target className="w-5 h-5" />
-            <span className="text-sm">MPM</span>
-          </div>
-          <div className="text-xl font-bold text-secondary">{stats.wpm}</div>
         </div>
       </div>
 
