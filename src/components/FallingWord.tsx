@@ -17,9 +17,13 @@ const FallingWord: React.FC<FallingWordProps> = ({ word }) => {
     return baseClass;
   };
 
-  const renderWordWithHighlight = () => {
+  const renderWordWithElimination = () => {
     if (!word.isBeingTyped || !word.typedText) {
-      return word.text;
+      return (
+        <span className="text-primary neon-text">
+          {word.text}
+        </span>
+      );
     }
 
     const typed = word.typedText;
@@ -27,8 +31,18 @@ const FallingWord: React.FC<FallingWordProps> = ({ word }) => {
     
     return (
       <>
-        <span className="text-accent">{typed}</span>
-        <span className="text-primary">{remaining}</span>
+        {/* Lettres éliminées avec effet d'explosion */}
+        <span className="eliminated-letters text-destructive animate-pulse" 
+              style={{ 
+                textShadow: '0 0 10px hsl(var(--destructive)), 0 0 20px hsl(var(--destructive))',
+                animation: 'eliminated-letter 0.3s ease-out forwards'
+              }}>
+          {typed}
+        </span>
+        {/* Lettres restantes */}
+        <span className="text-accent neon-text animate-pulse-neon">
+          {remaining}
+        </span>
       </>
     );
   };
@@ -42,7 +56,7 @@ const FallingWord: React.FC<FallingWordProps> = ({ word }) => {
         transform: `translateX(-50%)`,
       }}
     >
-      {renderWordWithHighlight()}
+      {renderWordWithElimination()}
     </div>
   );
 };

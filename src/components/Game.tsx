@@ -5,10 +5,14 @@ import FallingWord from './FallingWord';
 import GameHUD from './GameHUD';
 import TypingZone from './TypingZone';
 import GameMenu from './GameMenu';
+import Soldier from './Soldier';
 import { Pause, Play } from 'lucide-react';
 
 const Game: React.FC = () => {
   const { gameState, stats, startGame, handleInput, togglePause } = useGameLogic();
+
+  // Trouver le mot cible (celui en cours de frappe)
+  const targetWord = gameState.words.find(word => word.isBeingTyped);
 
   // Afficher le menu si le jeu n'est pas lancé
   if (!gameState.isPlaying) {
@@ -45,6 +49,18 @@ const Game: React.FC = () => {
           <FallingWord key={word.id} word={word} />
         ))}
       </div>
+
+      {/* Soldat avec arme */}
+      <Soldier 
+        isGamePlaying={gameState.isPlaying && !gameState.isPaused}
+        currentInput={gameState.currentInput}
+        targetWord={targetWord ? {
+          x: targetWord.x,
+          y: targetWord.y,
+          text: targetWord.text,
+          typedText: targetWord.typedText
+        } : null}
+      />
 
       {/* Zone de frappe */}
       <TypingZone

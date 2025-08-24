@@ -12,7 +12,7 @@ const INITIAL_GAME_STATE: GameState = {
   currentInput: '',
   wordsTyped: 0,
   gameSpeed: 1,
-  spawnRate: 3000,
+  spawnRate: 4000, // Encore plus lent pour spawn
 };
 
 const INITIAL_STATS: GameStats = {
@@ -55,7 +55,7 @@ export const useGameLogic = () => {
       text: getRandomWord(gameState.level),
       x: Math.random() * (window.innerWidth - 200) + 100,
       y: -50,
-      speed: 20 + (gameState.level * 5),
+      speed: 8 + (gameState.level * 2), // Vitesse encore plus lente
       isBeingTyped: false,
       typedText: '',
     };
@@ -148,7 +148,7 @@ export const useGameLogic = () => {
     setGameState(prev => {
       let newWords = prev.words.map(word => ({
         ...word,
-        y: word.y + (word.speed * 0.008)
+        y: word.y + (word.speed * 0.004) // Vitesse de descente encore plus lente
       }));
 
       // Supprimer les mots qui ont atteint le bas et enlever une vie
