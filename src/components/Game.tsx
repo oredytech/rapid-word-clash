@@ -31,10 +31,10 @@ const Game: React.FC = () => {
       {/* HUD */}
       <GameHUD gameState={gameState} stats={stats} />
 
-      {/* Bouton pause */}
+      {/* Bouton pause en bas à droite */}
       <button
         onClick={togglePause}
-        className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 btn-secondary"
+        className="absolute bottom-8 right-8 z-20 btn-secondary"
       >
         {gameState.isPaused ? (
           <Play className="w-5 h-5" />

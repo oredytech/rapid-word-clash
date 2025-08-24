@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { GameState, GameStats } from '../types/game';
-import { Heart, Zap, Trophy, Target } from 'lucide-react';
+import { Heart, Zap, Trophy, Target, Clock } from 'lucide-react';
 
 interface GameHUDProps {
   gameState: GameState;
@@ -27,16 +27,6 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
             <span className="text-sm">Niveau</span>
           </div>
           <div className="text-2xl font-bold text-accent">{gameState.level}</div>
-        </div>
-      </div>
-
-      {/* Stats centre - Temps seulement */}
-      <div className="flex flex-col gap-3 items-center">
-        <div className="hud-element">
-          <div className="text-sm text-muted-foreground">Temps</div>
-          <div className="text-lg font-mono">
-            {Math.floor(stats.timeElapsed / 60)}:{String(Math.floor(stats.timeElapsed % 60)).padStart(2, '0')}
-          </div>
         </div>
       </div>
 
@@ -69,14 +59,27 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
         </div>
       </div>
 
-      {/* MPM en bas à droite */}
-      <div className="absolute bottom-8 right-8">
+      {/* MPM en bas à gauche du score */}
+      <div className="absolute bottom-8 left-4">
         <div className="hud-element">
           <div className="flex items-center gap-2 text-secondary">
             <Target className="w-5 h-5" />
             <span className="text-sm">MPM</span>
           </div>
           <div className="text-xl font-bold text-secondary">{stats.wpm}</div>
+        </div>
+      </div>
+
+      {/* Temps en bas au centre */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="hud-element">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Clock className="w-5 h-5" />
+            <span className="text-sm">Temps</span>
+          </div>
+          <div className="text-lg font-mono">
+            {Math.floor(stats.timeElapsed / 60)}:{String(Math.floor(stats.timeElapsed % 60)).padStart(2, '0')}
+          </div>
         </div>
       </div>
     </div>
