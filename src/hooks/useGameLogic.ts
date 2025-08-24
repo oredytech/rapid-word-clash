@@ -13,7 +13,7 @@ const INITIAL_GAME_STATE: GameState = {
   currentInput: '',
   wordsTyped: 0,
   gameSpeed: 1,
-  spawnRate: 6000,
+  spawnRate: 3000, // Commencer avec 3 secondes entre les mots
 };
 
 const INITIAL_STATS: GameStats = {
@@ -51,14 +51,30 @@ export const useGameLogic = () => {
     }
   }, [stats.highScore]);
 
+  // Calculer les paramètres selon le niveau
+  const getGameParameters = useCallback((level: number) => {
+    const baseSpeed = 30;
+    const speedIncrement = 15; // Augmentation de vitesse par niveau
+    const baseSpawnRate = 3000;
+    const spawnRateDecrease = 200; // Diminution du délai entre les mots
+    const minSpawnRate = 800; // Minimum 0.8 secondes entre les mots
+    
+    return {
+      wordSpeed: baseSpeed + (level - 1) * speedIncrement,
+      spawnRate: Math.max(minSpawnRate, baseSpawnRate - (level - 1) * spawnRateDecrease)
+    };
+  }, []);
+
   // Générer un nouveau mot
   const spawnWord = useCallback(() => {
+    const { wordSpeed } = getGameParameters(gameState.level);
+    
     const word: Word = {
       id: Math.random().toString(36).substr(2, 9),
       text: getRandomWord(gameState.level),
       x: Math.random() * (window.innerWidth - 200) + 100,
       y: -50,
-      speed: 30 + (gameState.level * 8),
+      speed: wordSpeed,
       isBeingTyped: false,
       typedText: '',
     };
@@ -67,22 +83,25 @@ export const useGameLogic = () => {
       ...prev,
       words: [...prev.words, word]
     }));
-  }, [gameState.level]);
+  }, [gameState.level, getGameParameters]);
 
   // Démarrer le jeu
   const startGame = useCallback(() => {
     console.log('Démarrage du jeu...');
+    const { spawnRate } = getGameParameters(1);
+    
     setGameState(prev => ({
       ...INITIAL_GAME_STATE,
       isPlaying: true,
       level: 1,
       lives: 3,
+      spawnRate,
     }));
     setStats(prev => ({ ...INITIAL_STATS, highScore: prev.highScore }));
     setGameStartTime(Date.now());
     lastSpawnRef.current = Date.now();
     lastFrameTimeRef.current = performance.now();
-  }, []);
+  }, [getGameParameters]);
 
   // Arrêter le jeu
   const endGame = useCallback(() => {
@@ -147,11 +166,14 @@ export const useGameLogic = () => {
           newState.wordsTyped = prev.wordsTyped + 1;
           newState.currentInput = '';
 
-          // Vérifier passage au niveau suivant
-          if (newState.wordsTyped % 10 === 0) {
-            newState.level = prev.level + 1;
-            newState.spawnRate = Math.max(500, prev.spawnRate - 200);
-            console.log('Niveau suivant:', newState.level);
+          // Vérifier passage au niveau suivant (tous les 8 mots maintenant)
+          if (newState.wordsTyped % 8 === 0) {
+            const newLevel = prev.level + 1;
+            const { spawnRate } = getGameParameters(newLevel);
+            
+            newState.level = newLevel;
+            newState.spawnRate = spawnRate;
+            console.log(`Niveau suivant: ${newLevel}, Vitesse: ${getGameParameters(newLevel).wordSpeed}, Spawn rate: ${spawnRate}ms`);
             
             // Play level up sounds and effects
             soundManager.playLevelUp();
@@ -171,7 +193,7 @@ export const useGameLogic = () => {
 
       return newState;
     });
-  }, []);
+  }, [getGameParameters]);
 
   // Boucle de jeu principale (utilise un delta temps basé sur rAF)
   const gameLoop = useCallback((time: number) => {
