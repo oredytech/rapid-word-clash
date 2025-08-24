@@ -39,7 +39,7 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
         </div>
       </div>
 
-      {/* Vies droite */}
+      {/* Éléments droite */}
       <div className="flex flex-col gap-3">
         <div className="hud-element">
           <div className="flex items-center gap-2 text-destructive">
@@ -66,10 +66,8 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
             {stats.highScore.toLocaleString()}
           </div>
         </div>
-      </div>
 
-      {/* Temps en bas au centre */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        {/* Temps déplacé en haut à droite */}
         <div className="hud-element">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="w-5 h-5" />

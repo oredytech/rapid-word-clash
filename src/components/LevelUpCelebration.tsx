@@ -21,15 +21,20 @@ const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({
       setIsAnimating(true);
       setShowConfetti(true);
       
-      // Hide celebration after exactly 3 seconds
-      const timer = setTimeout(() => {
+      // Hide confetti after 2 seconds
+      const confettiTimer = setTimeout(() => {
         setShowConfetti(false);
+      }, 2000);
+      
+      // Hide celebration after 3 seconds (after confetti)
+      const celebrationTimer = setTimeout(() => {
         setIsAnimating(false);
         onComplete();
       }, 3000);
       
       return () => {
-        clearTimeout(timer);
+        clearTimeout(confettiTimer);
+        clearTimeout(celebrationTimer);
       };
     } else {
       setShowConfetti(false);
@@ -58,7 +63,7 @@ const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({
                   'hsl(var(--neon-green))'
                 ][Math.floor(Math.random() * 5)],
                 animationDelay: `${Math.random() * 2}s`,
-                animationDuration: '3s'
+                animationDuration: '2s'
               }}
             />
           ))}
@@ -90,14 +95,6 @@ const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({
           <p className="text-lg text-muted-foreground">
             Vitesse augmentée ! Plus de mots arrivent !
           </p>
-          
-          {/* Progress indicator */}
-          <div className="mt-4 w-full bg-muted rounded-full h-2">
-            <div 
-              className="bg-accent h-2 rounded-full transition-all duration-3000 ease-out"
-              style={{ width: `${(3000 - (Date.now() % 3000)) / 30}%` }}
-            />
-          </div>
         </div>
       </div>
     </div>
