@@ -26,22 +26,23 @@ const FallingWord: React.FC<FallingWordProps> = ({ word }) => {
       );
     }
 
-    const typed = word.typedText;
-    const remaining = word.text.slice(typed.length);
+    const typedLength = word.typedText.length;
+    const remaining = word.text.slice(typedLength);
     
     return (
       <>
-        {/* Lettres éliminées avec effet d'explosion */}
-        <span className="eliminated-letters text-destructive animate-pulse" 
-              style={{ 
-                textShadow: '0 0 10px hsl(var(--destructive)), 0 0 20px hsl(var(--destructive))',
-                animation: 'eliminated-letter 0.3s ease-out forwards'
-              }}>
-          {typed}
-        </span>
-        {/* Lettres restantes */}
-        <span className="text-accent neon-text animate-pulse-neon">
+        {/* Partie restante du mot */}
+        <span className="text-accent neon-text animate-pulse">
           {remaining}
+        </span>
+        {/* Effet visuel pour montrer l'élimination */}
+        <span className="absolute inset-0 pointer-events-none">
+          <span className="text-destructive opacity-50 animate-ping" 
+                style={{ 
+                  textShadow: '0 0 10px hsl(var(--destructive))',
+                }}>
+            {word.text.slice(0, typedLength)}
+          </span>
         </span>
       </>
     );

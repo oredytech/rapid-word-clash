@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Word, GameStats } from '../types/game';
 import { getRandomWord } from '../data/words';
@@ -13,7 +12,7 @@ const INITIAL_GAME_STATE: GameState = {
   currentInput: '',
   wordsTyped: 0,
   gameSpeed: 1,
-  spawnRate: 6000, // Ralentir un peu le rythme de spawn au départ
+  spawnRate: 6000,
 };
 
 const INITIAL_STATS: GameStats = {
@@ -32,7 +31,7 @@ export const useGameLogic = () => {
   const gameLoopRef = useRef<number>();
   const spawnTimerRef = useRef<number>();
   const lastSpawnRef = useRef<number>(0);
-  const lastFrameTimeRef = useRef<number>(0); // horodatage rAF précédent (ms, relatif à la page)
+  const lastFrameTimeRef = useRef<number>(0);
 
   // Charger le high score depuis localStorage
   useEffect(() => {
@@ -57,7 +56,6 @@ export const useGameLogic = () => {
       text: getRandomWord(gameState.level),
       x: Math.random() * (window.innerWidth - 200) + 100,
       y: -50,
-      // Interprétation: vitesse en pixels/seconde, volontairement lente au niveau 1
       speed: 30 + (gameState.level * 8),
       isBeingTyped: false,
       typedText: '',
@@ -80,8 +78,8 @@ export const useGameLogic = () => {
     }));
     setStats(prev => ({ ...INITIAL_STATS, highScore: prev.highScore }));
     setGameStartTime(Date.now());
-    lastSpawnRef.current = Date.now(); // horloge epoch pour le spawn
-    lastFrameTimeRef.current = performance.now(); // horloge rAF pour le delta
+    lastSpawnRef.current = Date.now();
+    lastFrameTimeRef.current = performance.now();
   }, []);
 
   // Arrêter le jeu
@@ -98,28 +96,40 @@ export const useGameLogic = () => {
     }
   }, [gameState.score, saveHighScore]);
 
-  // Gérer la saisie utilisateur
+  // Gérer la saisie utilisateur avec élimination progressive
   const handleInput = useCallback((input: string) => {
     console.log('Saisie utilisateur:', input);
     setGameState(prev => {
       let newState = { ...prev, currentInput: input };
       
-      // Vérifier si l'input correspond à un mot
+      if (input.length === 0) {
+        // Réinitialiser tous les mots si l'input est vide
+        newState.words = prev.words.map(word => ({
+          ...word,
+          isBeingTyped: false,
+          typedText: ''
+        }));
+        return newState;
+      }
+
+      // Chercher un mot qui commence par l'input actuel
       const matchingWord = prev.words.find(word => 
-        word.text.toLowerCase().startsWith(input.toLowerCase()) && !word.isBeingTyped
+        word.text.toLowerCase().startsWith(input.toLowerCase())
       );
 
-      if (matchingWord && input.length > 0) {
-        // Marquer le mot comme étant tapé
+      if (matchingWord) {
+        console.log('Mot en cours de frappe:', matchingWord.text, 'Input:', input);
+        
+        // Marquer ce mot comme étant tapé et mettre à jour le texte tapé
         newState.words = prev.words.map(word =>
           word.id === matchingWord.id
             ? { ...word, isBeingTyped: true, typedText: input }
             : { ...word, isBeingTyped: false, typedText: '' }
         );
 
-        // Si le mot est complètement tapé
+        // Si le mot est complètement tapé, l'éliminer
         if (input.toLowerCase() === matchingWord.text.toLowerCase()) {
-          console.log('Mot complété:', matchingWord.text);
+          console.log('Mot complètement éliminé:', matchingWord.text);
           newState.words = newState.words.filter(word => word.id !== matchingWord.id);
           newState.score = prev.score + (matchingWord.text.length * 10);
           newState.wordsTyped = prev.wordsTyped + 1;
@@ -132,8 +142,8 @@ export const useGameLogic = () => {
             console.log('Niveau suivant:', newState.level);
           }
         }
-      } else if (input.length === 0) {
-        // Réinitialiser tous les mots
+      } else {
+        // Aucun mot ne correspond, réinitialiser tous les mots
         newState.words = prev.words.map(word => ({
           ...word,
           isBeingTyped: false,
