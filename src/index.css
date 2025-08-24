@@ -1,95 +1,67 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Design System - Jeu de frappe arcade néon */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 220 13% 9%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 13% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 13% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 200 100% 50%;
+    --primary-foreground: 220 13% 9%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 300 100% 65%;
+    --secondary-foreground: 220 13% 9%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 13% 15%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 160 100% 50%;
+    --accent-foreground: 220 13% 9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 20%;
+    --input: 220 13% 15%;
+    --ring: 200 100% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Couleurs néon personnalisées */
+    --neon-cyan: 180 100% 50%;
+    --neon-pink: 330 100% 70%;
+    --neon-green: 120 100% 50%;
+    --neon-purple: 270 100% 70%;
+    --neon-orange: 30 100% 60%;
+
+    /* Gradients néon */
+    --gradient-primary: linear-gradient(135deg, hsl(180 100% 50%), hsl(270 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(330 100% 70%), hsl(30 100% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(120 100% 50%), hsl(180 100% 50%));
+
+    /* Ombres néon */
+    --shadow-cyan: 0 0 20px hsl(180 100% 50% / 0.5);
+    --shadow-pink: 0 0 20px hsl(330 100% 70% / 0.5);
+    --shadow-green: 0 0 20px hsl(120 100% 50% / 0.5);
+    --shadow-purple: 0 0 20px hsl(270 100% 70% / 0.5);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -101,5 +73,194 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Effets néon globaux */
+  .neon-text {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+
+  .neon-border {
+    box-shadow: 0 0 10px currentColor, inset 0 0 10px currentColor;
+  }
+
+  .game-container {
+    background: radial-gradient(ellipse at center, hsl(220 13% 12%) 0%, hsl(220 13% 8%) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      linear-gradient(90deg, transparent 98%, hsl(180 100% 50% / 0.1) 100%),
+      linear-gradient(0deg, transparent 98%, hsl(330 100% 70% / 0.1) 100%);
+    background-size: 50px 50px;
+    pointer-events: none;
+    animation: grid-move 20s linear infinite;
+  }
+
+  @keyframes grid-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+  }
+}
+
+@layer components {
+  /* Boutons néon */
+  .btn-neon {
+    @apply relative px-8 py-3 bg-transparent border-2 rounded-lg font-semibold uppercase tracking-wider;
+    @apply transition-all duration-300 overflow-hidden;
+  }
+
+  .btn-neon::before {
+    content: '';
+    @apply absolute inset-0 bg-current opacity-0 transition-opacity duration-300;
+    z-index: -1;
+  }
+
+  .btn-neon:hover::before {
+    @apply opacity-20;
+  }
+
+  .btn-primary {
+    @apply btn-neon border-primary text-primary;
+    box-shadow: var(--shadow-cyan);
+  }
+
+  .btn-secondary {
+    @apply btn-neon border-secondary text-secondary;
+    box-shadow: var(--shadow-pink);
+  }
+
+  .btn-accent {
+    @apply btn-neon border-accent text-accent;
+    box-shadow: var(--shadow-green);
+  }
+
+  /* Cartes de jeu */
+  .game-card {
+    @apply bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6;
+    @apply shadow-lg relative overflow-hidden;
+  }
+
+  .game-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5;
+    z-index: -1;
+  }
+
+  /* Mots qui tombent */
+  .falling-word {
+    @apply text-2xl font-bold px-4 py-2 rounded-lg bg-card/80 backdrop-blur-sm;
+    @apply border border-primary/50 text-primary neon-text;
+    box-shadow: var(--shadow-cyan);
+    animation: fall linear forwards, pulse 2s ease-in-out infinite alternate;
+  }
+
+  .falling-word.typing {
+    @apply border-accent text-accent;
+    box-shadow: var(--shadow-green);
+  }
+
+  .falling-word.completed {
+    @apply border-secondary text-secondary;
+    box-shadow: var(--shadow-pink);
+    animation: explode 0.3s ease-out forwards;
+  }
+
+  /* HUD Elements */
+  .hud-element {
+    @apply bg-muted/30 backdrop-blur-sm border border-border/50 rounded-lg p-4;
+    @apply text-center font-semibold;
+  }
+
+  .score-display {
+    @apply text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Zone de saisie */
+  .typing-zone {
+    @apply bg-muted/50 backdrop-blur-sm border-2 border-primary/50 rounded-xl p-4;
+    @apply text-center text-xl font-mono tracking-wider;
+    box-shadow: var(--shadow-cyan);
+  }
+
+  .typing-zone.focused {
+    @apply border-accent;
+    box-shadow: var(--shadow-green);
+  }
+}
+
+@layer utilities {
+  /* Animations personnalisées */
+  @keyframes fall {
+    from {
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(calc(100vh + 100px));
+      opacity: 1;
+    }
+  }
+
+  @keyframes explode {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-neon {
+    0%, 100% {
+      text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+    }
+    50% {
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    }
+  }
+
+  .animate-pulse-neon {
+    animation: pulse-neon 2s ease-in-out infinite;
+  }
+
+  /* Utilitaires de couleur néon */
+  .text-neon-cyan { color: hsl(var(--neon-cyan)); }
+  .text-neon-pink { color: hsl(var(--neon-pink)); }
+  .text-neon-green { color: hsl(var(--neon-green)); }
+  .text-neon-purple { color: hsl(var(--neon-purple)); }
+  .text-neon-orange { color: hsl(var(--neon-orange)); }
+
+  .border-neon-cyan { border-color: hsl(var(--neon-cyan)); }
+  .border-neon-pink { border-color: hsl(var(--neon-pink)); }
+  .border-neon-green { border-color: hsl(var(--neon-green)); }
+  .border-neon-purple { border-color: hsl(var(--neon-purple)); }
+  .border-neon-orange { border-color: hsl(var(--neon-orange)); }
+
+  /* Gradients */
+  .bg-gradient-neon {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+
+  .bg-gradient-success {
+    background: var(--gradient-success);
   }
 }

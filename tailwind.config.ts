@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				neon: {
+					cyan: 'hsl(var(--neon-cyan))',
+					pink: 'hsl(var(--neon-pink))',
+					green: 'hsl(var(--neon-green))',
+					purple: 'hsl(var(--neon-purple))',
+					orange: 'hsl(var(--neon-orange))'
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,50 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fall': {
+					from: {
+						transform: 'translateY(-100px)',
+						opacity: '0'
+					},
+					to: {
+						transform: 'translateY(calc(100vh + 100px))',
+						opacity: '1'
+					}
+				},
+				'explode': {
+					'0%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					},
+					'50%': {
+						transform: 'scale(1.2)'
+					},
+					'100%': {
+						transform: 'scale(0)',
+						opacity: '0'
+					}
+				},
+				'pulse-neon': {
+					'0%, 100%': {
+						textShadow: '0 0 5px currentColor, 0 0 10px currentColor'
+					},
+					'50%': {
+						textShadow: '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor'
+					}
+				},
+				'grid-move': {
+					'0%': { transform: 'translate(0, 0)' },
+					'100%': { transform: 'translate(50px, 50px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fall': 'fall linear forwards',
+				'explode': 'explode 0.3s ease-out forwards',
+				'pulse-neon': 'pulse-neon 2s ease-in-out infinite',
+				'grid-move': 'grid-move 20s linear infinite'
 			}
 		}
 	},
