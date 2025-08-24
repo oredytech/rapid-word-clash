@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Word, GameStats } from '../types/game';
 import { getRandomWord } from '../data/words';
@@ -13,7 +12,7 @@ const INITIAL_GAME_STATE: GameState = {
   currentInput: '',
   wordsTyped: 0,
   gameSpeed: 1,
-  spawnRate: 2000,
+  spawnRate: 3000,
 };
 
 const INITIAL_STATS: GameStats = {
@@ -56,7 +55,7 @@ export const useGameLogic = () => {
       text: getRandomWord(gameState.level),
       x: Math.random() * (window.innerWidth - 200) + 100,
       y: -50,
-      speed: 50 + (gameState.level * 10),
+      speed: 20 + (gameState.level * 5),
       isBeingTyped: false,
       typedText: '',
     };
@@ -149,7 +148,7 @@ export const useGameLogic = () => {
     setGameState(prev => {
       let newWords = prev.words.map(word => ({
         ...word,
-        y: word.y + (word.speed * 0.016) // 60 FPS
+        y: word.y + (word.speed * 0.008)
       }));
 
       // Supprimer les mots qui ont atteint le bas et enlever une vie
