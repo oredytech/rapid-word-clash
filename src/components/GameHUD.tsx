@@ -30,16 +30,8 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
         </div>
       </div>
 
-      {/* Stats centre */}
+      {/* Stats centre - Temps seulement */}
       <div className="flex flex-col gap-3 items-center">
-        <div className="hud-element">
-          <div className="flex items-center gap-2 text-secondary">
-            <Target className="w-5 h-5" />
-            <span className="text-sm">MPM</span>
-          </div>
-          <div className="text-xl font-bold text-secondary">{stats.wpm}</div>
-        </div>
-        
         <div className="hud-element">
           <div className="text-sm text-muted-foreground">Temps</div>
           <div className="text-lg font-mono">
@@ -74,6 +66,17 @@ const GameHUD: React.FC<GameHUDProps> = ({ gameState, stats }) => {
           <div className="text-lg font-bold text-neon-orange">
             {stats.highScore.toLocaleString()}
           </div>
+        </div>
+      </div>
+
+      {/* MPM en bas à droite */}
+      <div className="absolute bottom-8 right-8">
+        <div className="hud-element">
+          <div className="flex items-center gap-2 text-secondary">
+            <Target className="w-5 h-5" />
+            <span className="text-sm">MPM</span>
+          </div>
+          <div className="text-xl font-bold text-secondary">{stats.wpm}</div>
         </div>
       </div>
     </div>

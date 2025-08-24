@@ -37,7 +37,7 @@ const TypingZone: React.FC<TypingZoneProps> = ({
   }
 
   return (
-    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-96 z-20">
+    <div className="absolute bottom-8 left-8 w-96 z-20">
       <div className="game-card bg-card/90 backdrop-blur-sm border border-primary/30">
         <div className="flex items-center space-x-3">
           <Keyboard className="w-5 h-5 text-primary" />
