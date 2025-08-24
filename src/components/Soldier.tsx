@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { User, Zap } from 'lucide-react';
+import { Shield, Zap } from 'lucide-react';
 
 interface SoldierProps {
   isGamePlaying: boolean;
@@ -45,7 +45,7 @@ const Soldier: React.FC<SoldierProps> = ({ isGamePlaying, currentInput, targetWo
           <div className="relative">
             {/* Corps du soldat */}
             <div className="soldier-body bg-gradient-to-b from-primary to-secondary rounded-lg p-4 neon-border">
-              <User className="w-12 h-12 text-background" />
+              <Shield className="w-12 h-12 text-background" />
             </div>
             
             {/* Arme */}
