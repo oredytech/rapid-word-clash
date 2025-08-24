@@ -91,7 +91,15 @@ const GameMenu: React.FC<GameMenuProps> = ({
 
         {/* Footer */}
         <div className="mt-6 text-xs text-muted-foreground">
-          Développé avec ❤️ • Tapez vite et bien !
+          Fièrement conçu par{' '}
+          <a 
+            href="https://oredytech.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-accent transition-colors underline"
+          >
+            Oredy TECHNOLOGIES
+          </a>
         </div>
       </div>
     </div>
