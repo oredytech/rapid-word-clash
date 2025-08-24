@@ -21,8 +21,8 @@ const GameMenu: React.FC<GameMenuProps> = ({
       <div className="game-card max-w-md w-full mx-4 text-center">
         {/* Titre */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-neon bg-clip-text text-transparent animate-pulse-neon">
-            RAPID WORD CLASH
+          <h1 className="text-4xl font-bold mb-2 text-primary">
+            OT TAPE
           </h1>
           <p className="text-muted-foreground">
             {isGameOver ? 'Partie terminée !' : 'Jeu de frappe rapide'}
