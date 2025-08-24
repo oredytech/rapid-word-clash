@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Word, GameStats } from '../types/game';
 import { getRandomWord } from '../data/words';
@@ -12,7 +13,7 @@ const INITIAL_GAME_STATE: GameState = {
   currentInput: '',
   wordsTyped: 0,
   gameSpeed: 1,
-  spawnRate: 4000, // Encore plus lent pour spawn
+  spawnRate: 6000, // Ralentir un peu le rythme de spawn au départ
 };
 
 const INITIAL_STATS: GameStats = {
@@ -31,6 +32,7 @@ export const useGameLogic = () => {
   const gameLoopRef = useRef<number>();
   const spawnTimerRef = useRef<number>();
   const lastSpawnRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0); // horodatage rAF précédent (ms, relatif à la page)
 
   // Charger le high score depuis localStorage
   useEffect(() => {
@@ -55,7 +57,8 @@ export const useGameLogic = () => {
       text: getRandomWord(gameState.level),
       x: Math.random() * (window.innerWidth - 200) + 100,
       y: -50,
-      speed: 8 + (gameState.level * 2), // Vitesse encore plus lente
+      // Interprétation: vitesse en pixels/seconde, volontairement lente au niveau 1
+      speed: 30 + (gameState.level * 8),
       isBeingTyped: false,
       typedText: '',
     };
@@ -77,7 +80,8 @@ export const useGameLogic = () => {
     }));
     setStats(prev => ({ ...INITIAL_STATS, highScore: prev.highScore }));
     setGameStartTime(Date.now());
-    lastSpawnRef.current = Date.now();
+    lastSpawnRef.current = Date.now(); // horloge epoch pour le spawn
+    lastFrameTimeRef.current = performance.now(); // horloge rAF pour le delta
   }, []);
 
   // Arrêter le jeu
@@ -141,14 +145,18 @@ export const useGameLogic = () => {
     });
   }, []);
 
-  // Boucle de jeu principale
-  const gameLoop = useCallback(() => {
+  // Boucle de jeu principale (utilise un delta temps basé sur rAF)
+  const gameLoop = useCallback((time: number) => {
     if (!gameState.isPlaying || gameState.isPaused) return;
 
+    const deltaSec = lastFrameTimeRef.current ? (time - lastFrameTimeRef.current) / 1000 : 0;
+    lastFrameTimeRef.current = time;
+
     setGameState(prev => {
+      // Déplacement basé sur la vitesse en px/s et le delta temps
       let newWords = prev.words.map(word => ({
         ...word,
-        y: word.y + (word.speed * 0.004) // Vitesse de descente encore plus lente
+        y: word.y + (word.speed * deltaSec)
       }));
 
       // Supprimer les mots qui ont atteint le bas et enlever une vie
@@ -169,7 +177,7 @@ export const useGameLogic = () => {
       return { ...prev, words: newWords };
     });
 
-    // Spawner de nouveaux mots
+    // Spawner de nouveaux mots (basé sur l'horloge epoch)
     const now = Date.now();
     if (now - lastSpawnRef.current > gameState.spawnRate) {
       spawnWord();
@@ -193,6 +201,7 @@ export const useGameLogic = () => {
   // Démarrer/arrêter la boucle de jeu
   useEffect(() => {
     if (gameState.isPlaying && !gameState.isPaused) {
+      lastFrameTimeRef.current = performance.now();
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     } else {
       if (gameLoopRef.current) {
