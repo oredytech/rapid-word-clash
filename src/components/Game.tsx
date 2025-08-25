@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGameLogic } from '../hooks/useGameLogic';
+import { useGameOptions } from '../hooks/useGameOptions';
 import FallingWord from './FallingWord';
 import GameHUD from './GameHUD';
 import TypingZone from './TypingZone';
@@ -10,17 +11,18 @@ import LevelUpCelebration from './LevelUpCelebration';
 import { Pause, Play } from 'lucide-react';
 
 const Game: React.FC = () => {
-  const { gameState, stats, startGame, handleInput, togglePause } = useGameLogic();
+  const { options: gameOptions, updateOptions } = useGameOptions();
+  const { gameState, stats, startGame, handleInput, togglePause } = useGameLogic(gameOptions);
   const [showLevelUpCelebration, setShowLevelUpCelebration] = useState(false);
   const [celebrationLevel, setCelebrationLevel] = useState(1);
 
   // Watch for level changes to trigger celebration
   useEffect(() => {
-    if (gameState.level > celebrationLevel && gameState.isPlaying) {
+    if (gameState.level > celebrationLevel && gameState.isPlaying && gameOptions.particleEffects) {
       setCelebrationLevel(gameState.level);
       setShowLevelUpCelebration(true);
     }
-  }, [gameState.level, gameState.isPlaying, celebrationLevel]);
+  }, [gameState.level, gameState.isPlaying, celebrationLevel, gameOptions.particleEffects]);
 
   // Trouver le mot cible (celui en cours de frappe)
   const targetWord = gameState.words.find(word => word.isBeingTyped);
@@ -33,6 +35,8 @@ const Game: React.FC = () => {
         stats={stats}
         isGameOver={gameState.lives === 0}
         finalScore={gameState.score}
+        gameOptions={gameOptions}
+        onOptionsChange={updateOptions}
       />
     );
   }
@@ -57,7 +61,11 @@ const Game: React.FC = () => {
       {/* Mots qui tombent */}
       <div className="absolute inset-0">
         {gameState.words.map((word) => (
-          <FallingWord key={word.id} word={word} />
+          <FallingWord 
+            key={word.id} 
+            word={word} 
+            showTypedText={gameOptions.showTypedText}
+          />
         ))}
       </div>
 
@@ -78,14 +86,17 @@ const Game: React.FC = () => {
         value={gameState.currentInput}
         onChange={handleInput}
         isGamePlaying={gameState.isPlaying && !gameState.isPaused}
+        wordPreview={gameOptions.wordPreview ? targetWord?.text : undefined}
       />
 
       {/* Level up celebration */}
-      <LevelUpCelebration
-        level={gameState.level}
-        isVisible={showLevelUpCelebration}
-        onComplete={() => setShowLevelUpCelebration(false)}
-      />
+      {gameOptions.particleEffects && (
+        <LevelUpCelebration
+          level={gameState.level}
+          isVisible={showLevelUpCelebration}
+          onComplete={() => setShowLevelUpCelebration(false)}
+        />
+      )}
 
       {/* Overlay de pause */}
       {gameState.isPaused && (
@@ -106,15 +117,17 @@ const Game: React.FC = () => {
       )}
 
       {/* Effets visuels additionnels */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Particules flottantes */}
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/20 rounded-full animate-bounce" 
-             style={{ animationDelay: '0s', animationDuration: '3s' }} />
-        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-accent/30 rounded-full animate-bounce" 
-             style={{ animationDelay: '1s', animationDuration: '4s' }} />
-        <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-secondary/20 rounded-full animate-bounce" 
-             style={{ animationDelay: '2s', animationDuration: '5s' }} />
-      </div>
+      {gameOptions.particleEffects && (
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Particules flottantes */}
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/20 rounded-full animate-bounce" 
+               style={{ animationDelay: '0s', animationDuration: '3s' }} />
+          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-accent/30 rounded-full animate-bounce" 
+               style={{ animationDelay: '1s', animationDuration: '4s' }} />
+          <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-secondary/20 rounded-full animate-bounce" 
+               style={{ animationDelay: '2s', animationDuration: '5s' }} />
+        </div>
+      )}
     </div>
   );
 };

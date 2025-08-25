@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Word, GameStats } from '../types/game';
 import { getRandomWord } from '../data/words';
 import { soundManager } from '../utils/soundEffects';
+import { GameOptions } from './useGameOptions';
 
 const INITIAL_GAME_STATE: GameState = {
   isPlaying: false,
@@ -13,7 +14,7 @@ const INITIAL_GAME_STATE: GameState = {
   currentInput: '',
   wordsTyped: 0,
   gameSpeed: 1,
-  spawnRate: 3000, // Commencer avec 3 secondes entre les mots
+  spawnRate: 3000,
 };
 
 const INITIAL_STATS: GameStats = {
@@ -24,7 +25,7 @@ const INITIAL_STATS: GameStats = {
   highScore: 0,
 };
 
-export const useGameLogic = () => {
+export const useGameLogic = (gameOptions: GameOptions) => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
   const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
   const [gameStartTime, setGameStartTime] = useState<number>(0);
@@ -51,19 +52,29 @@ export const useGameLogic = () => {
     }
   }, [stats.highScore]);
 
-  // Calculer les paramètres selon le niveau
+  // Calculer les paramètres selon le niveau et les options
   const getGameParameters = useCallback((level: number) => {
     const baseSpeed = 30;
-    const speedIncrement = 15; // Augmentation de vitesse par niveau
+    const speedIncrement = 15;
     const baseSpawnRate = 3000;
-    const spawnRateDecrease = 200; // Diminution du délai entre les mots
-    const minSpawnRate = 800; // Minimum 0.8 secondes entre les mots
+    const spawnRateDecrease = 200;
+    const minSpawnRate = 800;
+    
+    // Appliquer les modificateurs de difficulté
+    const difficultyModifiers = {
+      facile: { speedMultiplier: 0.7, spawnRateMultiplier: 1.3 },
+      normal: { speedMultiplier: 1.0, spawnRateMultiplier: 1.0 },
+      difficile: { speedMultiplier: 1.4, spawnRateMultiplier: 0.7 }
+    }[gameOptions.difficulty];
     
     return {
-      wordSpeed: baseSpeed + (level - 1) * speedIncrement,
-      spawnRate: Math.max(minSpawnRate, baseSpawnRate - (level - 1) * spawnRateDecrease)
+      wordSpeed: (baseSpeed + (level - 1) * speedIncrement) * difficultyModifiers.speedMultiplier,
+      spawnRate: Math.max(
+        minSpawnRate, 
+        (baseSpawnRate - (level - 1) * spawnRateDecrease) * difficultyModifiers.spawnRateMultiplier
+      )
     };
-  }, []);
+  }, [gameOptions.difficulty]);
 
   // Générer un nouveau mot
   const spawnWord = useCallback(() => {
@@ -90,18 +101,26 @@ export const useGameLogic = () => {
     console.log('Démarrage du jeu...');
     const { spawnRate } = getGameParameters(1);
     
+    // Calculer les vies selon la difficulté
+    const baseLives = 3;
+    const livesBonus = {
+      facile: 1,
+      normal: 0,
+      difficile: -1
+    }[gameOptions.difficulty];
+    
     setGameState(prev => ({
       ...INITIAL_GAME_STATE,
       isPlaying: true,
       level: 1,
-      lives: 3,
+      lives: baseLives + livesBonus,
       spawnRate,
     }));
     setStats(prev => ({ ...INITIAL_STATS, highScore: prev.highScore }));
     setGameStartTime(Date.now());
     lastSpawnRef.current = Date.now();
     lastFrameTimeRef.current = performance.now();
-  }, [getGameParameters]);
+  }, [getGameParameters, gameOptions.difficulty]);
 
   // Arrêter le jeu
   const endGame = useCallback(() => {
@@ -110,7 +129,9 @@ export const useGameLogic = () => {
     saveHighScore(gameState.score);
     
     // Stop all sound effects
-    soundManager.stopAlert();
+    if (gameOptions.soundEnabled) {
+      soundManager.stopAlert();
+    }
     
     if (gameLoopRef.current) {
       cancelAnimationFrame(gameLoopRef.current);
@@ -118,7 +139,7 @@ export const useGameLogic = () => {
     if (spawnTimerRef.current) {
       clearInterval(spawnTimerRef.current);
     }
-  }, [gameState.score, saveHighScore]);
+  }, [gameState.score, saveHighScore, gameOptions.soundEnabled]);
 
   // Gérer la saisie utilisateur avec élimination progressive
   const handleInput = useCallback((input: string) => {
@@ -144,8 +165,10 @@ export const useGameLogic = () => {
       if (matchingWord) {
         console.log('Mot en cours de frappe:', matchingWord.text, 'Input:', input);
         
-        // Play laser sound when typing
-        soundManager.playLaser();
+        // Play laser sound when typing (respect sound options)
+        if (gameOptions.soundEnabled) {
+          soundManager.playLaser();
+        }
         
         // Marquer ce mot comme étant tapé et mettre à jour le texte tapé
         newState.words = prev.words.map(word =>
@@ -158,15 +181,17 @@ export const useGameLogic = () => {
         if (input.toLowerCase() === matchingWord.text.toLowerCase()) {
           console.log('Mot complètement éliminé:', matchingWord.text);
           
-          // Play explosion sound and visual effect
-          soundManager.playExplosion();
+          // Play explosion sound and visual effect (respect sound options)
+          if (gameOptions.soundEnabled) {
+            soundManager.playExplosion();
+          }
           
           newState.words = newState.words.filter(word => word.id !== matchingWord.id);
           newState.score = prev.score + (matchingWord.text.length * 10);
           newState.wordsTyped = prev.wordsTyped + 1;
           newState.currentInput = '';
 
-          // Vérifier passage au niveau suivant (tous les 8 mots maintenant)
+          // Vérifier passage au niveau suivant (tous les 8 mots)
           if (newState.wordsTyped % 8 === 0) {
             const newLevel = prev.level + 1;
             const { spawnRate } = getGameParameters(newLevel);
@@ -175,11 +200,13 @@ export const useGameLogic = () => {
             newState.spawnRate = spawnRate;
             console.log(`Niveau suivant: ${newLevel}, Vitesse: ${getGameParameters(newLevel).wordSpeed}, Spawn rate: ${spawnRate}ms`);
             
-            // Play level up sounds and effects
-            soundManager.playLevelUp();
-            setTimeout(() => {
-              soundManager.playCelebration();
-            }, 500);
+            // Play level up sounds and effects (respect sound options)
+            if (gameOptions.soundEnabled) {
+              soundManager.playLevelUp();
+              setTimeout(() => {
+                soundManager.playCelebration();
+              }, 500);
+            }
           }
         }
       } else {
@@ -193,7 +220,7 @@ export const useGameLogic = () => {
 
       return newState;
     });
-  }, [getGameParameters]);
+  }, [getGameParameters, gameOptions.soundEnabled]);
 
   // Boucle de jeu principale (utilise un delta temps basé sur rAF)
   const gameLoop = useCallback((time: number) => {
@@ -219,16 +246,18 @@ export const useGameLogic = () => {
         }
       });
 
-      // Start alert for new words at bottom
-      currentWordsAtBottom.forEach(wordId => {
-        if (!wordsAtBottom.has(wordId)) {
-          soundManager.startAlert();
-        }
-      });
+      // Start alert for new words at bottom (respect sound options)
+      if (gameOptions.soundEnabled) {
+        currentWordsAtBottom.forEach(wordId => {
+          if (!wordsAtBottom.has(wordId)) {
+            soundManager.startAlert();
+          }
+        });
 
-      // Stop alert if no more words at bottom
-      if (currentWordsAtBottom.size === 0 && wordsAtBottom.size > 0) {
-        soundManager.stopAlert();
+        // Stop alert if no more words at bottom
+        if (currentWordsAtBottom.size === 0 && wordsAtBottom.size > 0) {
+          soundManager.stopAlert();
+        }
       }
 
       setWordsAtBottom(currentWordsAtBottom);
@@ -240,7 +269,9 @@ export const useGameLogic = () => {
         newWords = newWords.filter(word => word.y <= window.innerHeight);
         
         // Stop alert for removed words
-        soundManager.stopAlert();
+        if (gameOptions.soundEnabled) {
+          soundManager.stopAlert();
+        }
         
         const newLives = prev.lives - wordsToRemove.length;
         if (newLives <= 0) {
@@ -273,7 +304,7 @@ export const useGameLogic = () => {
     }));
 
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [gameState.isPlaying, gameState.isPaused, gameState.spawnRate, gameState.wordsTyped, gameStartTime, spawnWord, wordsAtBottom]);
+  }, [gameState.isPlaying, gameState.isPaused, gameState.spawnRate, gameState.wordsTyped, gameStartTime, spawnWord, wordsAtBottom, gameOptions.soundEnabled]);
 
   // Démarrer/arrêter la boucle de jeu
   useEffect(() => {

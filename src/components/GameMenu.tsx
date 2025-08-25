@@ -2,19 +2,25 @@
 import React from 'react';
 import { Play, RotateCcw, Trophy, Zap } from 'lucide-react';
 import { GameStats } from '../types/game';
+import GameOptions from './GameOptions';
+import { GameOptions as GameOptionsType } from '../hooks/useGameOptions';
 
 interface GameMenuProps {
   onStartGame: () => void;
   stats: GameStats;
   isGameOver?: boolean;
   finalScore?: number;
+  gameOptions: GameOptionsType;
+  onOptionsChange: (options: GameOptionsType) => void;
 }
 
 const GameMenu: React.FC<GameMenuProps> = ({ 
   onStartGame, 
   stats, 
   isGameOver = false, 
-  finalScore = 0 
+  finalScore = 0,
+  gameOptions,
+  onOptionsChange
 }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -65,29 +71,39 @@ const GameMenu: React.FC<GameMenuProps> = ({
         {!isGameOver && (
           <div className="mb-8 text-left space-y-2 text-sm text-muted-foreground">
             <p>🎯 <strong>Objectif :</strong> Tapez les mots avant qu'ils atteignent le bas</p>
-            <p>⚡ <strong>Progression :</strong> 10 mots = niveau suivant</p>
-            <p>❤️ <strong>Vies :</strong> 3 chances, ne ratez aucun mot !</p>
-            <p>⌨️ <strong>Astuce :</strong> Commencez à taper dès que vous voyez le mot</p>
+            <p>⚡ <strong>Progression :</strong> 8 mots = niveau suivant</p>
+            <p>❤️ <strong>Vies :</strong> {gameOptions.difficulty === 'facile' ? '4' : gameOptions.difficulty === 'difficile' ? '2' : '3'} chances</p>
+            <p>⌨️ <strong>Difficulté :</strong> {gameOptions.difficulty}</p>
           </div>
         )}
 
-        {/* Bouton d'action */}
-        <button
-          onClick={onStartGame}
-          className={isGameOver ? 'btn-accent' : 'btn-primary'}
-        >
-          {isGameOver ? (
-            <>
-              <RotateCcw className="w-5 h-5 mr-2" />
-              Rejouer
-            </>
-          ) : (
-            <>
-              <Play className="w-5 h-5 mr-2" />
-              Commencer
-            </>
-          )}
-        </button>
+        {/* Boutons d'action */}
+        <div className="space-y-4">
+          <button
+            onClick={onStartGame}
+            className={isGameOver ? 'btn-accent w-full' : 'btn-primary w-full'}
+          >
+            {isGameOver ? (
+              <>
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Rejouer
+              </>
+            ) : (
+              <>
+                <Play className="w-5 h-5 mr-2" />
+                Commencer
+              </>
+            )}
+          </button>
+
+          {/* Options */}
+          <div className="flex justify-center">
+            <GameOptions
+              options={gameOptions}
+              onOptionsChange={onOptionsChange}
+            />
+          </div>
+        </div>
 
         {/* Footer */}
         <div className="mt-6 text-xs text-muted-foreground">
