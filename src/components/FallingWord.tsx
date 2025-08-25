@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Word } from '../types/game';
 
 interface FallingWordProps {
   word: Word;
+  showTypedText?: boolean;
 }
 
-const FallingWord: React.FC<FallingWordProps> = ({ word }) => {
+const FallingWord: React.FC<FallingWordProps> = ({ word, showTypedText = true }) => {
   const [isExploding, setIsExploding] = useState(false);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const FallingWord: React.FC<FallingWordProps> = ({ word }) => {
   };
 
   const renderWordWithElimination = () => {
-    if (!word.isBeingTyped || !word.typedText) {
+    if (!word.isBeingTyped || !word.typedText || !showTypedText) {
       return (
         <span className="text-primary neon-text">
           {word.text}

@@ -6,12 +6,14 @@ interface TypingZoneProps {
   value: string;
   onChange: (value: string) => void;
   isGamePlaying: boolean;
+  wordPreview?: string;
 }
 
 const TypingZone: React.FC<TypingZoneProps> = ({
   value,
   onChange,
-  isGamePlaying
+  isGamePlaying,
+  wordPreview
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +41,11 @@ const TypingZone: React.FC<TypingZoneProps> = ({
   return (
     <div className="absolute bottom-8 left-8 w-96 z-20">
       <div className="game-card bg-card/90 backdrop-blur-sm border border-primary/30">
+        {wordPreview && (
+          <div className="mb-2 px-3 py-1 text-xs text-muted-foreground border-b border-border/50">
+            Mot cible: <span className="text-primary font-mono">{wordPreview}</span>
+          </div>
+        )}
         <div className="flex items-center space-x-3">
           <Keyboard className="w-5 h-5 text-primary" />
           <input
