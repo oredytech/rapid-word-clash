@@ -226,14 +226,17 @@ export const useGameLogic = (gameOptions: GameOptions) => {
   const gameLoop = useCallback((time: number) => {
     if (!gameState.isPlaying || gameState.isPaused) return;
 
-    const deltaSec = lastFrameTimeRef.current ? (time - lastFrameTimeRef.current) / 1000 : 0;
+    const deltaSec = lastFrameTimeRef.current ? (time - lastFrameTimeRef.current) / 1000 : 1/60; // Fallback à 60fps
     lastFrameTimeRef.current = time;
+    
+    // S'assurer qu'on a un delta temps minimum pour éviter les mots bloqués
+    const safeDeltaSec = Math.max(deltaSec, 1/120); // Minimum 120fps equivalent
 
     setGameState(prev => {
       // Déplacement basé sur la vitesse en px/s et le delta temps
       let newWords = prev.words.map(word => ({
         ...word,
-        y: word.y + (word.speed * deltaSec)
+        y: word.y + (word.speed * safeDeltaSec)
       }));
 
       // Check for words reaching the bottom and handle alert sounds
