@@ -143,6 +143,19 @@
     box-shadow: var(--shadow-green);
   }
 
+  .btn-premium {
+    @apply relative px-4 py-2 rounded-lg font-semibold transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-xl animate-pulse;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1f2937;
+    border: 2px solid #f59e0b;
+  }
+
+  .btn-premium:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(251, 191, 36, 0.4);
+  }
+
   /* Cartes de jeu */
   .game-card {
     @apply bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6;

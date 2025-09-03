@@ -2,19 +2,24 @@
 import React, { useState, useEffect } from 'react';
 import { useGameLogic } from '../hooks/useGameLogic';
 import { useGameOptions } from '../hooks/useGameOptions';
+import { usePremium } from '../hooks/usePremium';
 import FallingWord from './FallingWord';
 import GameHUD from './GameHUD';
 import TypingZone from './TypingZone';
 import GameMenu from './GameMenu';
 import Soldier from './Soldier';
 import LevelUpCelebration from './LevelUpCelebration';
-import { Pause, Play } from 'lucide-react';
+import AdBanner from './AdBanner';
+import PremiumUpgrade from './PremiumUpgrade';
+import { Pause, Play, Crown } from 'lucide-react';
 
 const Game: React.FC = () => {
   const { options: gameOptions, updateOptions } = useGameOptions();
   const { gameState, stats, startGame, handleInput, togglePause } = useGameLogic(gameOptions);
+  const { isPremium, activatePremium } = usePremium();
   const [showLevelUpCelebration, setShowLevelUpCelebration] = useState(false);
   const [celebrationLevel, setCelebrationLevel] = useState(1);
+  const [showPremiumUpgrade, setShowPremiumUpgrade] = useState(false);
 
   // Watch for level changes to trigger celebration
   useEffect(() => {
@@ -41,22 +46,54 @@ const Game: React.FC = () => {
     );
   }
 
+  const handlePremiumUpgrade = (plan: '1month' | '1year' | 'lifetime') => {
+    activatePremium(plan);
+    setShowPremiumUpgrade(false);
+    // Simuler le paiement - en production, intégrer un vrai système de paiement
+    alert(`Premium ${plan} activé ! Les publicités sont maintenant désactivées.`);
+  };
+
   return (
     <div className="game-container min-h-screen relative overflow-hidden">
+      {/* Publicité en haut si pas premium */}
+      {!isPremium && (
+        <div className="relative z-10 bg-background/95 border-b">
+          <AdBanner 
+            adSlot="1234567890" 
+            className="max-w-screen-xl mx-auto" 
+            style={{ minHeight: '90px' }}
+          />
+        </div>
+      )}
+
       {/* HUD */}
       <GameHUD gameState={gameState} stats={stats} />
 
-      {/* Bouton pause en bas à droite */}
-      <button
-        onClick={togglePause}
-        className="absolute bottom-8 right-8 z-20 btn-secondary"
-      >
-        {gameState.isPaused ? (
-          <Play className="w-5 h-5" />
-        ) : (
-          <Pause className="w-5 h-5" />
+      {/* Boutons en bas à droite */}
+      <div className="absolute bottom-8 right-8 z-20 flex flex-col gap-2">
+        {/* Bouton Premium si pas premium */}
+        {!isPremium && (
+          <button
+            onClick={() => setShowPremiumUpgrade(true)}
+            className="btn-premium bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-400 hover:to-orange-400 shadow-lg"
+          >
+            <Crown className="w-4 h-4 mr-1" />
+            Premium
+          </button>
         )}
-      </button>
+        
+        {/* Bouton pause */}
+        <button
+          onClick={togglePause}
+          className="btn-secondary"
+        >
+          {gameState.isPaused ? (
+            <Play className="w-5 h-5" />
+          ) : (
+            <Pause className="w-5 h-5" />
+          )}
+        </button>
+      </div>
 
       {/* Mots qui tombent */}
       <div className="absolute inset-0">
@@ -144,6 +181,25 @@ const Game: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Publicité en bas si pas premium */}
+      {!isPremium && (
+        <div className="absolute bottom-0 left-0 right-0 z-10 bg-background/95 border-t">
+          <AdBanner 
+            adSlot="0987654321" 
+            className="max-w-screen-xl mx-auto" 
+            style={{ minHeight: '90px' }}
+          />
+        </div>
+      )}
+
+      {/* Modal Premium Upgrade */}
+      {showPremiumUpgrade && (
+        <PremiumUpgrade 
+          onUpgrade={handlePremiumUpgrade}
+          onClose={() => setShowPremiumUpgrade(false)}
+        />
       )}
     </div>
   );
