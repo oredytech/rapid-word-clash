@@ -44,6 +44,15 @@ export const useGameLogic = (gameOptions: GameOptions) => {
     }
   }, []);
 
+  // Appliquer le volume des sons selon les options
+  useEffect(() => {
+    if (gameOptions.soundEnabled) {
+      soundManager.setVolume(gameOptions.soundVolume / 100);
+    } else {
+      soundManager.setVolume(0);
+    }
+  }, [gameOptions.soundVolume, gameOptions.soundEnabled]);
+
   // Sauvegarder le high score
   const saveHighScore = useCallback((score: number) => {
     if (score > stats.highScore) {

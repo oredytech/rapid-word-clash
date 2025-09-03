@@ -35,7 +35,7 @@ const FallingWord: React.FC<FallingWordProps> = ({ word, showTypedText = true })
   };
 
   const renderWordWithElimination = () => {
-    if (!word.isBeingTyped || !word.typedText || !showTypedText) {
+    if (!word.isBeingTyped || !word.typedText) {
       return (
         <span className="text-primary neon-text">
           {word.text}
@@ -44,22 +44,30 @@ const FallingWord: React.FC<FallingWordProps> = ({ word, showTypedText = true })
     }
 
     const typedLength = word.typedText.length;
+    const typedPart = word.text.slice(0, typedLength);
     const remaining = word.text.slice(typedLength);
     
+    if (!showTypedText) {
+      // Mode simple sans affichage du texte tapé
+      return (
+        <span className="text-primary neon-text animate-pulse">
+          {word.text}
+        </span>
+      );
+    }
+
     return (
       <>
+        {/* Partie tapée (éliminée progressivement) */}
+        <span className="text-destructive/40 line-through" 
+              style={{ 
+                textShadow: '0 0 5px hsl(var(--destructive) / 0.5)',
+              }}>
+          {typedPart}
+        </span>
         {/* Partie restante du mot */}
         <span className="text-accent neon-text animate-pulse">
           {remaining}
-        </span>
-        {/* Effet visuel pour montrer l'élimination */}
-        <span className="absolute inset-0 pointer-events-none">
-          <span className="text-destructive opacity-50 animate-ping" 
-                style={{ 
-                  textShadow: '0 0 10px hsl(var(--destructive))',
-                }}>
-            {word.text.slice(0, typedLength)}
-          </span>
         </span>
       </>
     );
