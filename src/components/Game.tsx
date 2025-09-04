@@ -111,23 +111,6 @@ const Game: React.FC = () => {
         />
       )}
 
-      {/* Overlay de pause */}
-      {gameState.isPaused && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-30">
-          <div className="game-card text-center">
-            <h2 className="text-3xl font-bold mb-4 text-primary neon-text">
-              Pause
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Appuyez sur le bouton pause pour continuer
-            </p>
-            <button onClick={togglePause} className="btn-primary">
-              <Play className="w-5 h-5 mr-2" />
-              Reprendre
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Effets visuels additionnels */}
       {gameOptions.particleEffects && (
