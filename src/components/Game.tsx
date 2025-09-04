@@ -21,6 +21,7 @@ const Game: React.FC = () => {
   const [celebrationLevel, setCelebrationLevel] = useState(1);
   const [showPremiumUpgrade, setShowPremiumUpgrade] = useState(false);
   const [gameCount, setGameCount] = useState(0);
+  const [hasPlayedBefore, setHasPlayedBefore] = useState(false);
 
   // Watch for level changes to trigger celebration
   useEffect(() => {
@@ -30,9 +31,16 @@ const Game: React.FC = () => {
     }
   }, [gameState.level, gameState.isPlaying, celebrationLevel, gameOptions.particleEffects]);
 
-  // Show premium popup occasionally for non-premium users
+  // Mark that user has started playing
   useEffect(() => {
-    if (!isPremium && !gameState.isPlaying && gameState.lives === 0) {
+    if (gameState.isPlaying && !hasPlayedBefore) {
+      setHasPlayedBefore(true);
+    }
+  }, [gameState.isPlaying, hasPlayedBefore]);
+
+  // Show premium popup occasionally for non-premium users ONLY after they've played
+  useEffect(() => {
+    if (!isPremium && !gameState.isPlaying && gameState.lives === 0 && hasPlayedBefore) {
       // Increment game count when game ends
       const newGameCount = gameCount + 1;
       setGameCount(newGameCount);
@@ -44,7 +52,7 @@ const Game: React.FC = () => {
         }, 2000); // Show after 2 seconds
       }
     }
-  }, [gameState.isPlaying, gameState.lives, isPremium, gameCount]);
+  }, [gameState.isPlaying, gameState.lives, isPremium, gameCount, hasPlayedBefore]);
 
   // Trouver le mot cible (celui en cours de frappe)
   const targetWord = gameState.words.find(word => word.isBeingTyped);
