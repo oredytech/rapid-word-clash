@@ -91,18 +91,8 @@
   }
 
   .game-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      linear-gradient(90deg, transparent 98%, hsl(180 100% 50% / 0.1) 100%),
-      linear-gradient(0deg, transparent 98%, hsl(330 100% 70% / 0.1) 100%);
-    background-size: 50px 50px;
-    pointer-events: none;
-    animation: grid-move 20s linear infinite;
+    /* Désactivation de la couche d'overlay animée qui gênait la vue du jeu */
+    content: none;
   }
 
   @keyframes grid-move {
