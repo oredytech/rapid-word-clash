@@ -112,35 +112,6 @@ const Game: React.FC = () => {
       )}
 
 
-      {/* Effets visuels additionnels */}
-      {gameOptions.particleEffects && (
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Particules flottantes améliorées */}
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-${i % 3 + 1} h-${i % 3 + 1} bg-gradient-to-br from-primary/30 to-accent/20 rounded-full animate-bounce`}
-              style={{
-                left: `${20 + (i * 15)}%`,
-                top: `${10 + (i * 10)}%`,
-                animationDelay: `${i * 0.5}s`,
-                animationDuration: `${3 + (i % 3)}s`,
-              }}
-            />
-          ))}
-          {/* Lignes d'énergie */}
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-primary/5 to-transparent animate-pulse" />
-          {/* Grille de fond futuriste */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="grid grid-cols-8 grid-rows-6 h-full w-full">
-              {[...Array(48)].map((_, i) => (
-                <div key={i} className="border border-primary/20 animate-pulse" 
-                     style={{ animationDelay: `${(i * 0.1) % 3}s` }} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Publicité en bas */}
       <div className="absolute bottom-0 left-0 right-0 z-10 bg-background/95 border-t">
