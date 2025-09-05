@@ -3,6 +3,12 @@
   command = "npm run build"
   publish = "dist"
 
+# Ezoic ads.txt redirect
+[[redirects]]
+  from = "/ads.txt"
+  to = "https://srv.adstxtmanager.com/19390/ottape.com"
+  status = 301
+
 # Handle SPA routing
 [[redirects]]
   from = "/*"
