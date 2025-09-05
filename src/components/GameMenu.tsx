@@ -27,16 +27,9 @@ const GameMenu: React.FC<GameMenuProps> = ({
       <div className="game-card max-w-md w-full mx-4 text-center">
         {/* Titre */}
         <div className="mb-8">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <img 
-              src="/lovable-uploads/275a29eb-5c34-4919-8286-ced0f3b12454.png" 
-              alt="OTTAPE Logo" 
-              className="w-16 h-16"
-            />
-            <h1 className="text-4xl font-bold text-primary">
-              OTTAPE
-            </h1>
-          </div>
+          <h1 className="text-4xl font-bold mb-2 text-primary">
+            OT TAPE
+          </h1>
           <p className="text-muted-foreground">
             {isGameOver ? 'Partie terminée !' : 'Jeu de frappe rapide'}
           </p>

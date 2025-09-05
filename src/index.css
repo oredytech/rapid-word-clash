@@ -91,8 +91,18 @@
   }
 
   .game-container::before {
-    /* Désactivation de la couche d'overlay animée qui gênait la vue du jeu */
-    content: none;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      linear-gradient(90deg, transparent 98%, hsl(180 100% 50% / 0.1) 100%),
+      linear-gradient(0deg, transparent 98%, hsl(330 100% 70% / 0.1) 100%);
+    background-size: 50px 50px;
+    pointer-events: none;
+    animation: grid-move 20s linear infinite;
   }
 
   @keyframes grid-move {
@@ -131,19 +141,6 @@
   .btn-accent {
     @apply btn-neon border-accent text-accent;
     box-shadow: var(--shadow-green);
-  }
-
-  .btn-premium {
-    @apply relative px-4 py-2 rounded-lg font-semibold transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-xl animate-pulse;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #1f2937;
-    border: 2px solid #f59e0b;
-  }
-
-  .btn-premium:hover {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(251, 191, 36, 0.4);
   }
 
   /* Cartes de jeu */
